@@ -1,0 +1,18 @@
+import json
+import os
+
+
+DATA_FILE = "products.json"
+
+def load_data():
+
+    try:
+        with open(DATA_FILE, encoding='utf-8') as f:
+            data = json.load(f)
+            return data
+    except FileNotFoundError:
+        # Lần đầu chạy chưa có file thì trả về list rỗng
+        return []
+    except json.JSONDecodeError:
+        # Nếu file lỗi định dạng, cũng trả về rỗng để tránh crash
+        return []
