@@ -1,0 +1,115 @@
+def add_product(products):
+
+    name = input("Tên sản phẩm: ")
+    brand = input("Thương hiệu: ")
+    
+    # Xử lý nhập giá và số lượng (bắt lỗi nếu nhập sai định dạng)
+    while True:
+        try:
+            price = float(input("Nhập giá sản phẩm: "))
+            quantity = float(input("Nhập số lượng tồn kho: "))
+            if price < 0 or quantity < 0:
+                print("Giá và số lượng phải lớn hơn hoặc bằng 0.")
+                continue
+            break
+        except ValueError:
+            print("Vui lòng nhập con số hợp lệ!")
+
+    # Tự động tạo ID: LT + số thứ tự (đơn giản hóa)
+    new_id = ("LT", len(products) + 1)
+    
+    # Kiểm tra xem ID này đã tồn tại chưa (trường hợp xóa rồi thêm mới có thể trùng)
+    existing_ids = [p['id'] for p in products]
+    count = len(products) + 1
+    while new_id in existing_ids:
+        count += 1
+        new_id = f"LT{count:02d}"
+
+    new_product = {
+        "id": new_id,
+        "name": name,
+        "brand": brand,
+        "price": price,
+        "quantity": quantity
+    }
+    
+    products.append(new_product)
+    print("Đã thêm sản phẩm thành công! Mã sản phẩm:", new_id)
+    return products
+
+def update_product(products):
+
+    product_id = input("Nhập mã sản phẩm cần sửa (VD: LT01): ").strip()
+    
+    found = False
+    for product in products:
+        if product['id'] == product_id:
+            found = True
+            print("Tìm thấy:", product['name'])
+            print("Nhập thông tin mới:")
+            
+            product['name'] = input("Tên mới", ({product['name']}) ) or product['name']
+            product['brand'] = input("Thương hiệu mới", ({product['brand']}) ) or product['brand']
+            
+            # Cập nhật giá và số lượng
+            try:
+                p_input = input("Giá mới", ({product['price']}) )
+                if p_input:
+                    product['price'] = float(p_input)
+
+                q_input = input("Số lượng mới", ({product['quantity']}) )
+                if q_input:
+                    product['quantity'] = float(q_input)
+            except ValueError:
+                print("Lỗi nhập liệu số! Giữ nguyên giá trị cũ.")
+
+            print("Cập nhật thành công!")
+            break
+    
+    if not found:
+        print("Không tìm thấy sản phẩm có mã", product_id)
+    
+    return products
+
+def delete_product(products):
+       
+    # Bước 1: Yêu cầu nhập và tự động chuyển sang chữ IN HOA
+    input_id = input("Nhập mã sản phẩm cần xóa (VD: LT01): ").strip().upper()
+    
+    found_product = None
+    
+    # Bước 2: Tìm kiếm sản phẩm
+    for p in products:
+        if p['id'].upper() == input_id:
+            found_product = p
+            break
+    
+    # Bước 3: Xử lý xóa
+    if found_product:
+        print("Đã tìm thấy sản phẩm:", found_product['name'], "(Giá:", found_product['price'], ")")
+        confirm = input("Bạn chắc chắn muốn xóa không? (y/n): ")
+        
+        if confirm.lower() == 'y':
+            products.remove(found_product)
+            print(">> Đã xóa thành công!")
+        else:
+            print(">> Đã hủy thao tác xóa.")
+    else:
+        print(">> KHÔNG TÌM THẤY mã sản phẩm ", input_id, ".")
+        print("Các mã sản phẩm hiện có trong kho:", end=" ")
+        ids = [p['id'] for p in products]
+        print(", ".join(ids))
+
+    return products
+
+def search_product_by_name(products):
+
+    keyword = input("Nhập tên sản phẩm cần tìm: ").lower()
+    
+    results = [p for p in products if keyword in p['name'].lower()]
+    
+    if results:
+        print("\nTìm thấy", len(results), "kết quả:")
+        display_all_products(results) 
+    else:
+        print("Không tìm thấy sản phẩm nào chứa từ khóa", {keyword})
