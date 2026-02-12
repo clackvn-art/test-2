@@ -1,0 +1,27 @@
+def search_product_by_name(products):
+
+    keyword = input("Nhập tên sản phẩm cần tìm: ").lower()
+    
+    results = [p for p in products if keyword in p['name'].lower()]
+    
+    if results:
+        print("\nTìm thấy", len(results), "kết quả:")
+        display_all_products(results) 
+    else:
+        print("Không tìm thấy sản phẩm nào chứa từ khóa", {keyword})
+
+def display_all_products(products):
+
+    if not products:
+        print("\n>> Kho hàng trống.")
+        return
+
+    print("\n" + "="*85)
+    print(f"{'MÃ':<10} | {'TÊN SẢN PHẨM':<30} | {'THƯƠNG HIỆU':<15} | {'GIÁ':<12} | {'SL':<5}")
+    print("-" * 85)
+    
+    for p in products:
+        formatted_price = "{:,}".format(p['price'])
+        print(f"{p['id']:<10} | {p['name']:<30} | {p['brand']:<15} | {formatted_price:<12} | {p['quantity']:<5}")
+    
+    print("="*85 + "\n")
